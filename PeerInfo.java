@@ -1,12 +1,12 @@
 public class PeerInfo {
     PeerInfo next = null;
     public String hostname;
-    public int portname;
-    public PeerInfo(String hostname, int portname){
+    public int portno;
+    public PeerInfo(String hostname, int portno){
         this.hostname = hostname;
-        this.portname = portname;
+        this.portno = portno;
     }
     public String toString(){
-        return hostname + "||" + portname;
+        return hostname + "||" + portno;
     }
 }

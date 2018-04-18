@@ -27,7 +27,7 @@ public class Client{
                         request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
                         break;
                     case "LIST":
-                        request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
+                        request += request_choice + " ALL" + " P2P-CI/1.0\r\n";
                         break;
                     default:
                         System.out.println("invalid input");
@@ -39,6 +39,8 @@ public class Client{
 //                BufferedReader outToServer = new BufferedReader(new InputStreamReader(System.in));
 //                request_choice = outToServer.readLine();
                 BufferedReader outToServer = new BufferedReader(new StringReader(request));
+                //request must set to "" otherwise the 2nd request would follow by "END"of 1st request, which can't not detect, further lead to variable request[] in server out of range 5
+                request = "";
                 DataOutputStream outputStreamToServer = new DataOutputStream(clientSocket.getOutputStream());
                 String line;
                 while((line = outToServer.readLine())!=null){
