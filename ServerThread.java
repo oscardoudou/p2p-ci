@@ -53,6 +53,7 @@ public class ServerThread extends Thread {
                     responseADD(request);
                     break;
                 case "LOO":
+                    responseLOOKUP(request);
                     break;
                 case "LIS":
                     responseLIST();
@@ -92,14 +93,7 @@ public class ServerThread extends Thread {
         response += version + " 200 OK\r\n";
         response += "RFC " + no + " " + title + " " + hostname + " " + port_no +"\r\n";
         response += "\r\n"+"END";
-//        Iterator it = list.iterator();
-//        while(it.hasNext()){
-//            System.out.println(it.next());
-//        }
-//        it = index.iterator();
-//        while(it.hasNext()){
-//            System.out.println(it.next());
-//        }
+
     }
     public void responseLIST(){
         response += version + " 200 OK\r\n";
@@ -109,13 +103,42 @@ public class ServerThread extends Thread {
         while(it.hasNext()){
              RFCInfo rfc = it.next();
              Iterator<PeerInfo> peerit = list.iterator();
-             int portno = 0;
+             int uploadportno = 0;
              while(peerit.hasNext()){
                  PeerInfo peerinfo = peerit.next();
                  if(peerinfo.hostname == rfc.hostname)
-                     portno = peerinfo.portno;
+                     uploadportno = peerinfo.portno;
              }
-            response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + portno +"\r\n";
+            response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + uploadportno +"\r\n";
+        }
+        response += "\r\n" + "END";
+    }
+    public void responseLOOKUP(String[] request){
+        response += version + " 200 OK\r\n";
+        response += "\r\n";
+
+        String temp = request[0].substring(11,12);
+        int i = 12;
+        while(request[0].charAt(i) != ' ')
+            temp += request[0].charAt(i++);
+        int no = Integer.parseInt(temp);
+
+        Iterator<RFCInfo> it = index.iterator();
+        while(it.hasNext()){
+            //here rfc stand for rfc_entry
+            RFCInfo rfc = it.next();
+            if(rfc.no == no){
+                //there could be multiple rfc_entry matched
+                int uploadportno = 0;
+                Iterator<PeerInfo> peerit = list.iterator();
+                while(peerit.hasNext()){
+                    PeerInfo peerinfo = peerit.next();
+                    if(peerinfo.hostname == rfc.hostname)
+                        //for each matched rfc_entry, there could only be one unique portno
+                        uploadportno = peerinfo.portno;
+                }
+                response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + uploadportno +"\r\n";
+            }
         }
         response += "\r\n" + "END";
     }

@@ -13,7 +13,7 @@ public class Client{
                 Socket clientSocket = new Socket("127.0.0.1", 5678);
 
                 System.out.println("Construct the request to send to server:");
-                System.out.println("Input request type(ADD/LOOkUP/LIST):");
+                System.out.println("Input request type(ADD/LOOKUP/LIST):");
                 Scanner sc = new Scanner(System.in);
                 request_choice = sc.nextLine();
                 System.out.println("Input rfc no you want to request(ADD/LOOKUP/LIST):");
