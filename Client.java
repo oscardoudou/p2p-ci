@@ -1,40 +1,69 @@
-package project;
 import java.net.*;
 import java.io.*;
+import java.util.Scanner;
 
 public class Client{
-	public static void main (String[] args) throws Exception{
-		try{
-			String serverSentence;
-			String capitalizedSentence;
-			String clientSentence;
-			 
-			while(true){
-			Socket clientSocket = new Socket("127.0.0.1", 5678);
-			
-			DataInputStream inputStreamFromServer = new DataInputStream(clientSocket.getInputStream());
-			InputStreamReader serverStreamReader = new InputStreamReader(inputStreamFromServer);
-			BufferedReader inFromServer = new BufferedReader(serverStreamReader);
+    public static void main (String[] args) throws Exception{
+        try{
+            String response;
+            String request_choice;
+            String request = "";
 
-			serverSentence = inFromServer.readLine();
-			System.out.println("From server: " + serverSentence);
+            while(true){
+                Socket clientSocket = new Socket("127.0.0.1", 5678);
 
-			BufferedReader outToServer = new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("Enter string to send to server:");
-			clientSentence = outToServer.readLine();
-			DataOutputStream outputStreamToServer = new DataOutputStream(clientSocket.getOutputStream());
+                System.out.println("Construct the request to send to server:");
+                System.out.println("Input request type(ADD/LOOkUP/LIST):");
+                Scanner sc = new Scanner(System.in);
+                request_choice = sc.nextLine();
+                System.out.println("Input rfc no you want to request(ADD/LOOKUP/LIST):");
+                String rfc_no = sc.nextLine();
 
-			//capitalizedSentence = serverSentence.toUpperCase();
-			outputStreamToServer.writeBytes(clientSentence + '\n');
-			//outputStreamToServer.writeBytes(capitalizedSentence + '\n');
+                switch(request_choice){
+                    case "ADD":
+                        request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
+                        break;
+                    case "LOOKUP":
+                        request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
+                        break;
+                    case "LIST":
+                        request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
+                        break;
+                    default:
+                        System.out.println("invalid input");
+                }
+                request += "Host: " + Inet4Address.getLocalHost().getHostAddress() + "\r\n";
+                request += "Port: " + "34567" + "\r\n";
+                request += "Title: " + "PCE Requirement" +"\r\n" ;
+                request += "\r\n" +"END";
+//                BufferedReader outToServer = new BufferedReader(new InputStreamReader(System.in));
+//                request_choice = outToServer.readLine();
+                BufferedReader outToServer = new BufferedReader(new StringReader(request));
+                DataOutputStream outputStreamToServer = new DataOutputStream(clientSocket.getOutputStream());
+                String line;
+                while((line = outToServer.readLine())!=null){
+//                    //really don't know why i have to comment this statement, anyway if do help end the server wait
+//                    if("END".equals(line))
+//                        break;
+                    outputStreamToServer.writeBytes(line + '\n');
+                }
+                DataInputStream inputStreamFromServer = new DataInputStream(clientSocket.getInputStream());
+                InputStreamReader serverStreamReader = new InputStreamReader(inputStreamFromServer);
+                BufferedReader inFromServer = new BufferedReader(serverStreamReader);
 
-			//System.out.println("Here is the capitalized result sent to server: " + capitalizedSentence);
-			clientSocket.close();
-			}
-			// 
-		}
-		catch (IOException e){
-			System.out.println(e);
-		}
-	}
+                System.out.println("Response from server: ");
+                line = "";
+                while((line = inFromServer.readLine())!=null){
+                    if("END".equals(line))
+                        break;
+                    System.out.println(line);
+                }
+
+                clientSocket.close();
+            }
+        }
+        catch (IOException e){
+            System.out.println(e);
+        }
+    }
 }
