@@ -1,6 +1,10 @@
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * this is a seperate thread to not interrupt main thread UI, actually thread tackle with server task is ServerThread
+ */
+
 public class StartServer extends Thread{
     @Override
     public void run() {
@@ -8,6 +12,7 @@ public class StartServer extends Thread{
             ServerSocket serverSocket = new ServerSocket(7734);
             System.out.println("Listening on port: "+ serverSocket.getLocalPort());
             while(true){
+                //ServerThread 不在有accept()了，移到外面来了，否则非得打开两个client，才能又一个serverThread
                 Socket socket = serverSocket.accept();
                 String client_ip = socket.getRemoteSocketAddress().toString();
                 int client_port_no = socket.getPort();

@@ -4,6 +4,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * work as server client done
+ * real server done
+ */
+
 public class ServerThread extends Thread {
 
     public static List<PeerInfo> list = new LinkedList<>();
