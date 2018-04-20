@@ -9,9 +9,16 @@ import java.util.Scanner;
  *  client should first establish its own connection to server well-known port
  *  client should call PeerHandler which extend Thread as long as new peer connection accept
  * @author Yichi Zhang
+ * finish uploadport listening in background(another thread) could connecte to different peer via this port
+ * this listening background doesn't interrupt main thread UI
+ * work as server client done
+ * real client done
+ * todo work as peer Server peer client
+ * todo test other peer connection to upload_port
+ * todo peer Server prompt
+ * todo peer client prompt
  */
 public class Client{
-    public static final int SO_TIMEOUT = 2000;
 
     public static void main (String[] args) throws Exception{
         //hard code here for local run
@@ -24,24 +31,27 @@ public class Client{
 
             //this socket is for persistent connection to server, only close when leave system
             Socket clientSocket = new Socket(hostname, port);
-            PeerClient peerClient = new PeerClient(clientSocket);
+            RealClient realClient = new RealClient(clientSocket);
 
             System.out.println("Please input uploadport (you want to use as PeerServer)");
             int uploadportno = Integer.parseInt(sc.nextLine());
+            realClient.upload_portno = uploadportno;
             System.out.println(uploadportno);
-            ServerSocket listeningSocket = new ServerSocket(uploadportno);
-//            listeningSocket.setSoTimeout(2000);
+
+            new StartClientServer(uploadportno).start();
+//            ServerSocket listeningSocket = new ServerSocket(uploadportno);
+
             System.out.println("Pleas select the role for client:");
             role = sc.nextLine();
             switch (role) {
                 case "client":
-                    peerClient.run();
+                    realClient.run();
                     break;
-                case "server":
-                    while (true) {
-                        PeerServerThread peerServerThread = new PeerServerThread(listeningSocket);
-                        peerServerThread.start();
-                    }
+//                case "server":
+//                    while (true) {
+//                        PeerServerThread peerServerThread = new PeerServerThread(listeningSocket);
+//                        peerServerThread.start();
+//                    }
             }
 
         }catch(IOException e){

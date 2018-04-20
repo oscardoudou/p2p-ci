@@ -1,15 +1,19 @@
 import java.net.ServerSocket;
 import java.net.Socket;
+/**
+ * todo peer Server prompt
+ */
+
 
 public class PeerServerThread extends Thread{
-    ServerSocket p2pserverSocket;
+    Socket socket;
 
-    public PeerServerThread(ServerSocket serverSocket){
-        p2pserverSocket = serverSocket;
+    public PeerServerThread(Socket socket){
+        this.socket = socket;
     }
 
     @Override
     public void run() {
-        System.out.println("now client work as server role");
+        System.out.println("now client could always works like a server role");
     }
 }
