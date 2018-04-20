@@ -24,52 +24,55 @@ public class ServerThread extends Thread {
 
     public void run (){
         try{
-            String client_ip = socket.getRemoteSocketAddress().toString();
-            int client_port_no = socket.getPort();
-            System.out.println("Connecting  to "+ client_ip);
+            while(true){
+//                String client_ip = socket.getRemoteSocketAddress().toString();
+//                int client_port_no = socket.getPort();
+//                System.out.println("ServerThread initializing... ");
+//                System.out.println("Connecting  to " + client_ip);
 
-            DataInputStream inputStreamFromClient = new DataInputStream(socket.getInputStream());
-            InputStreamReader clientStreamReader = new InputStreamReader(inputStreamFromClient);
-            BufferedReader inFromClient = new BufferedReader(clientStreamReader);
+                DataInputStream inputStreamFromClient = new DataInputStream(socket.getInputStream());
+                InputStreamReader clientStreamReader = new InputStreamReader(inputStreamFromClient);
+                BufferedReader inFromClient = new BufferedReader(clientStreamReader);
 
-            System.out.println("Request from client: ");
-            String line;
-            int i = 0;
-            while((line = inFromClient.readLine())!= null){
-                if("END".equals(line))
-                    break;
-                request[i++] = line;
+                System.out.println("Request from client: ");
+                String line;
+                int i = 0;
+                while((line = inFromClient.readLine())!= null){
+                    if("END".equals(line))
+                        break;
+                    request[i++] = line;
 //                if(i <= 3)
 //                    System.out.println(request[0].substring(0,3));
-                System.out.println(line);
-            }
-            version = request[0].substring(request[0].length()-10,request[0].length());
-            hostname = request[1].substring(6);
-            port_no = Integer.parseInt(request[2].substring(6));
-            title = request[3].substring(7);
-            //System.out.println(request[0].substring(0,3));
-            switch(request[0].substring(0,3)){
-                case "ADD":
-                    responseADD(request);
-                    break;
-                case "LOO":
-                    responseLOOKUP(request);
-                    break;
-                case "LIS":
-                    responseLIST();
-                    break;
-                default:
-                    System.out.println("can not parse request type");
-                    break;
-            }
+                    System.out.println(line);
+                }
+                version = request[0].substring(request[0].length()-10,request[0].length());
+                hostname = request[1].substring(6);
+                port_no = Integer.parseInt(request[2].substring(6));
+                title = request[3].substring(7);
+                //System.out.println(request[0].substring(0,3));
+                switch(request[0].substring(0,3)){
+                    case "ADD":
+                        responseADD(request);
+                        break;
+                    case "LOO":
+                        responseLOOKUP(request);
+                        break;
+                    case "LIS":
+                        responseLIST();
+                        break;
+                    default:
+                        System.out.println("can not parse request type");
+                        break;
+                }
 
-            BufferedReader outToClient = new BufferedReader(new StringReader(response));
-            response = "";
-            DataOutputStream outputStreamToClient = new DataOutputStream(socket.getOutputStream());
-            line = "";
-            while((line = outToClient.readLine())!=null){
-                //since line has get rid of \r\n to format multiple line into hierarchic message
-                outputStreamToClient.writeBytes(line + '\n');
+                BufferedReader outToClient = new BufferedReader(new StringReader(response));
+                response = "";
+                DataOutputStream outputStreamToClient = new DataOutputStream(socket.getOutputStream());
+                line = "";
+                while((line = outToClient.readLine())!=null){
+                    //since line has get rid of \r\n to format multiple line into hierarchic message
+                    outputStreamToClient.writeBytes(line + '\n');
+                }
             }
 
         }

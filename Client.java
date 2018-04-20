@@ -2,69 +2,49 @@ import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * client have only two process
+ * 1. a consistent connection with centralize server to notify it is active
+ * 2. a upload process listen other peer's connection(this is the part need multithread, cause it may connect to multiple peer)
+ *  client should first establish its own connection to server well-known port
+ *  client should call PeerHandler which extend Thread as long as new peer connection accept
+ * @author Yichi Zhang
+ */
 public class Client{
+    public static final int SO_TIMEOUT = 2000;
+
     public static void main (String[] args) throws Exception{
+        //hard code here for local run
+        String hostname = "127.0.0.1";
+        int port = 7734;
+        Scanner sc = new Scanner(System.in);
+        String role;
+
         try{
-            String response;
-            String request_choice;
-            String request = "";
 
-            while(true){
-                Socket clientSocket = new Socket("127.0.0.1", 5678);
+            //this socket is for persistent connection to server, only close when leave system
+            Socket clientSocket = new Socket(hostname, port);
+            PeerClient peerClient = new PeerClient(clientSocket);
 
-                System.out.println("Construct the request to send to server:");
-                System.out.println("Input request type(ADD/LOOKUP/LIST):");
-                Scanner sc = new Scanner(System.in);
-                request_choice = sc.nextLine();
-                System.out.println("Input rfc no you want to request(ADD/LOOKUP/LIST):");
-                String rfc_no = sc.nextLine();
-
-                switch(request_choice){
-                    case "ADD":
-                        request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
-                        break;
-                    case "LOOKUP":
-                        request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
-                        break;
-                    case "LIST":
-                        request += request_choice + " ALL" + " P2P-CI/1.0\r\n";
-                        break;
-                    default:
-                        System.out.println("invalid input");
-                }
-                request += "Host: " + Inet4Address.getLocalHost().getHostAddress() + "\r\n";
-                request += "Port: " + "34567" + "\r\n";
-                request += "Title: " + "PCE Requirement" +"\r\n" ;
-                request += "\r\n" +"END";
-//                BufferedReader outToServer = new BufferedReader(new InputStreamReader(System.in));
-//                request_choice = outToServer.readLine();
-                BufferedReader outToServer = new BufferedReader(new StringReader(request));
-                //request must set to "" otherwise the 2nd request would follow by "END"of 1st request, which can't not detect, further lead to variable request[] in server out of range 5
-                request = "";
-                DataOutputStream outputStreamToServer = new DataOutputStream(clientSocket.getOutputStream());
-                String line;
-                while((line = outToServer.readLine())!=null){
-//                    //really don't know why i have to comment this statement, anyway if do help end the server wait
-//                    if("END".equals(line))
-//                        break;
-                    outputStreamToServer.writeBytes(line + '\n');
-                }
-                DataInputStream inputStreamFromServer = new DataInputStream(clientSocket.getInputStream());
-                InputStreamReader serverStreamReader = new InputStreamReader(inputStreamFromServer);
-                BufferedReader inFromServer = new BufferedReader(serverStreamReader);
-
-                System.out.println("Response from server: ");
-                line = "";
-                while((line = inFromServer.readLine())!=null){
-                    if("END".equals(line))
-                        break;
-                    System.out.println(line);
-                }
-
-                clientSocket.close();
+            System.out.println("Please input uploadport (you want to use as PeerServer)");
+            int uploadportno = Integer.parseInt(sc.nextLine());
+            System.out.println(uploadportno);
+            ServerSocket listeningSocket = new ServerSocket(uploadportno);
+//            listeningSocket.setSoTimeout(2000);
+            System.out.println("Pleas select the role for client:");
+            role = sc.nextLine();
+            switch (role) {
+                case "client":
+                    peerClient.run();
+                    break;
+                case "server":
+                    while (true) {
+                        PeerServerThread peerServerThread = new PeerServerThread(listeningSocket);
+                        peerServerThread.start();
+                    }
             }
-        }
-        catch (IOException e){
+
+        }catch(IOException e){
             System.out.println(e);
         }
     }
