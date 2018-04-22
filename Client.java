@@ -41,17 +41,22 @@ public class Client{
             new StartClientServer(uploadportno).start();
 //            ServerSocket listeningSocket = new ServerSocket(uploadportno);
 
-            System.out.println("Pleas select the role for client:");
-            role = sc.nextLine();
-            switch (role) {
-                case "client":
-                    realClient.run();
-                    break;
-//                case "server":
+            while (true) {
+                System.out.println("Pleas select the role for client:");
+                role = sc.nextLine();
+                switch (role) {
+                    case "client":
+                        realClient.run();
+                        break;
+                    case "peerclient":
+                        //System.out.println("works as peer client");
+                        new PeerClient().run();
+                        break;
 //                    while (true) {
 //                        PeerServerThread peerServerThread = new PeerServerThread(listeningSocket);
 //                        peerServerThread.start();
 //                    }
+                }
             }
 
         }catch(IOException e){

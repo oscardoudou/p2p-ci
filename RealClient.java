@@ -39,10 +39,14 @@ public class RealClient {
                         request += request_choice + " ALL" + " P2P-CI/1.0\r\n";
                         break;
                         //to RealClient/Peer select
-                    case "Return":
+                    case "LEAVE":
+                        socket.close();
+                        System.out.println("Leaving the system, irreversible operation, only restart the program could register in again");
                         return;
                     default:
-                        System.out.println("invalid input");
+                        System.out.println("Invalid input return to role selection");
+                        return;
+
                 }
                 request += "Host: " + Inet4Address.getLocalHost().getHostAddress() + "\r\n";
                 request += "Port: " + upload_portno + "\r\n";

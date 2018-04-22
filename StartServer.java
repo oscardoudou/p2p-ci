@@ -3,6 +3,8 @@ import java.net.Socket;
 
 /**
  * this is a seperate thread to not interrupt main thread UI, actually thread tackle with server task is ServerThread
+ * In order to circulate generating new ServerThread, we add a infinite loop here.
+ * As long as it create a new Thread to take care of new client, it would keep on listening (accept())
  */
 
 public class StartServer extends Thread{

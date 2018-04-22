@@ -16,12 +16,15 @@ public class StartClientServer extends Thread{
             ServerSocket clientserverSocket = new ServerSocket(upload_portno);
             System.out.println("Listening on port:" + clientserverSocket.getLocalPort());
 
-            Socket socket = clientserverSocket.accept();
-            String peer_ip = socket.getRemoteSocketAddress().toString();
-            System.out.println("PeerServerThread initializing...");
-            System.out.println("Connecting to " + peer_ip);
-            PeerServerThread peerServerThread = new PeerServerThread(socket);
-            peerServerThread.start();
+            while(true){
+                Socket socket = clientserverSocket.accept();
+                String peer_ip = socket.getRemoteSocketAddress().toString();
+                System.out.println("PeerServerThread initializing...");
+                System.out.println("Connecting to " + peer_ip);
+                PeerServerThread peerServerThread = new PeerServerThread(socket);
+                peerServerThread.start();
+            }
+
 
         }catch(Exception e){
             e.printStackTrace();

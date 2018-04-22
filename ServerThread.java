@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * work as server client done
  * real server done
+ * the infinite loop is to iteratively tackle client's request as long as client don't quit
  */
 
 public class ServerThread extends Thread {
@@ -50,6 +51,8 @@ public class ServerThread extends Thread {
 //                    System.out.println(request[0].substring(0,3));
                     System.out.println(line);
                 }
+                if(line == null)
+                    return;
                 version = request[0].substring(request[0].length()-10,request[0].length());
                 hostname = request[1].substring(6);
                 port_no = Integer.parseInt(request[2].substring(6));
@@ -82,7 +85,9 @@ public class ServerThread extends Thread {
 
         }
         catch(IOException e){
-            System.out.println(e);
+            //follow statement print grey Exception prompt, while printStackTrace print red prompt
+//            System.out.println(e);
+            e.printStackTrace();
         }
     }
     public void responseADD(String[] request){
