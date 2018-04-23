@@ -2,6 +2,10 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * todo peerclient retrieve data from response
+ */
+
 public class PeerClient {
     Socket socket = null;
     String request = "";
@@ -38,9 +42,10 @@ public class PeerClient {
                 DataInputStream inputStreamFromPeer = new DataInputStream(socket.getInputStream());
                 BufferedReader outToPeer = new BufferedReader(new StringReader(request));
                 request = "";
+
                 while ((line = outToPeer.readLine()) != null) {
-//                if (line.equals("END"))
-//                    break;
+                    //if (line.equals("END"))
+                    //  break;
                     //这里读进来的line没有\r\n
                     outputStreamToPeer.writeBytes(line + "\n");
                 }
@@ -64,8 +69,10 @@ public class PeerClient {
     public void get(){
 
             request += "GET RFC " + rfc_no + " P2P-CI/1.0" + "\r\n";
+            //hostname is from which RFC is requested
             request += "Host: " + hostname + "\r\n";
-            request += "OS: MAC" + "\r\n";
+            //OS of requesting host
+            request += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + "\r\n";
             request += "\r\n" + "END";
 
     }

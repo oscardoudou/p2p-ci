@@ -47,6 +47,7 @@ public class ServerThread extends Thread {
 //                    System.out.println(request[0].substring(0,3));
                     System.out.println(line);
                 }
+                //avoid broken pipe write exception, know and find this solution by debug step by step
                 if(line == null)
                     return;
                 version = request[0].substring(request[0].length()-10,request[0].length());
