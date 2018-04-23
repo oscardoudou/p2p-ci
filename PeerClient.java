@@ -62,20 +62,11 @@ public class PeerClient {
 
     }
     public void get(){
-       // String line;
-        //try {
-
 
             request += "GET RFC " + rfc_no + " P2P-CI/1.0" + "\r\n";
             request += "Host: " + hostname + "\r\n";
             request += "OS: MAC" + "\r\n";
             request += "\r\n" + "END";
-
-
-
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
     }
 }

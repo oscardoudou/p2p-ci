@@ -52,15 +52,14 @@ public class RealClient {
                 request += "Port: " + upload_portno + "\r\n";
                 request += "Title: " + "PCE Requirement" +"\r\n" ;
                 request += "\r\n" +"END";
-//                BufferedReader outToServer = new BufferedReader(new InputStreamReader(System.in));
-//                request_choice = outToServer.readLine();
+//
                 BufferedReader outToServer = new BufferedReader(new StringReader(request));
-                //request must set to "" otherwise the 2nd request would follow by "END"of 1st request, which can't not detect, further lead to variable request[] in server out of range 5
+                //!!!request must set to "" otherwise the 2nd request would follow by "END"of 1st request, which can't not detect, further lead to variable request[] in server out of range 5
                 request = "";
                 DataOutputStream outputStreamToServer = new DataOutputStream(socket.getOutputStream());
                 String line;
                 while((line = outToServer.readLine())!=null){
-//                    //really don't know why i have to comment this statement, anyway if do help end the server wait
+//                    //really don't know why I have to comment this statement, anyway if do help end the server wait
 //                    if("END".equals(line))
 //                        break;
                     outputStreamToServer.writeBytes(line + '\n');

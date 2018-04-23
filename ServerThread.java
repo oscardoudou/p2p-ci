@@ -31,10 +31,6 @@ public class ServerThread extends Thread {
     public void run (){
         try{
             while(true){
-//                String client_ip = socket.getRemoteSocketAddress().toString();
-//                int client_port_no = socket.getPort();
-//                System.out.println("ServerThread initializing... ");
-//                System.out.println("Connecting  to " + client_ip);
 
                 DataInputStream inputStreamFromClient = new DataInputStream(socket.getInputStream());
                 InputStreamReader clientStreamReader = new InputStreamReader(inputStreamFromClient);
@@ -85,8 +81,7 @@ public class ServerThread extends Thread {
 
         }
         catch(IOException e){
-            //follow statement print grey Exception prompt, while printStackTrace print red prompt
-//            System.out.println(e);
+            //System.out.println(e); print grey Exception prompt, while printStackTrace print red prompt
             e.printStackTrace();
         }
     }

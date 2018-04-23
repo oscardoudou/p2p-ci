@@ -11,6 +11,9 @@ public class StartServer extends Thread{
     @Override
     public void run() {
         try{
+            //create a server-side socket,namely ServerSocket, assign binding port, start listening
+            //ServerSocket 就像是一头热的挑子， 开了个口，始终在等对面的信，接收到了对面的信儿才变成真正socket
+            //相比之下client side就不需要这种东西，连成功了就是socket，没连成就是错误的socket，不存在中间状态
             ServerSocket serverSocket = new ServerSocket(7734);
             System.out.println("Listening on port: "+ serverSocket.getLocalPort());
             while(true){
