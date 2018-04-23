@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
+
 /**
  * DataInputStream 是最底层的
  * 需要reader读（inputStreamReader就是一种）
@@ -16,7 +18,7 @@ import java.net.Socket;
  * //                System.out.println(dir.getAbsolutePath());
  * //                System.out.println(dir.getCanonicalPath());
  *
- * todo peer Server data transfer
+ * done peer Server data transfer
  */
 
 
@@ -35,6 +37,7 @@ public class PeerServerThread extends Thread{
         try{
 
             while(true){
+                //datainputstream is for primitive type
                 DataInputStream inputStreamFromPeer = new DataInputStream(socket.getInputStream());
                 DataOutputStream outputStreamToPeer = new DataOutputStream(socket.getOutputStream());
                 //size could be 4
@@ -71,23 +74,46 @@ public class PeerServerThread extends Thread{
                 //mimic new File (".")
                 File rfcdir = new File(parentPath + "/.");
                 File[] fileList = rfcdir.listFiles();
+                File rfcfile = null;
+                String targetrfc = "rfc" + no + ".txt";
+
                 for(File file : fileList){
                     //System.out.println(file.getName());
-                    if(file.getName() == "rfc" + no + ".txt" );
+                    //!!!for string comparaion, can not simply use == ?
+                    if(targetrfc.equals(file.getName())){
                         status = 200;
+                        rfcfile = file;
+                    }
                 }
 
+                // TODO: 4/23/18 status correspons phrase
+                // TODO: 4/23/18 only 200 send infomation after 1st line
                 String response = "P2P-CI/1.0 " + status + "\r\n";
                 response += "Date: " + java.time.LocalDate.now() + " " + java.time.LocalTime.now() +"\r\n";
                 response += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + "\r\n";
-                response += "Last-Modified: " + "\r\n";
+                response += "Last-Modified: " + new Date(rfcfile.lastModified()) + "\r\n";
+                response += "Content-Length: " + rfcfile.length() + "\r\n";
+                response += "Content-Type: Text/Text" +"\r\n";
+                // TODO: 4/23/18 dont know why "END" + "\r\n" would cut some content
                 response += "\r\n" + "END";
-                BufferedReader outToPeer = new BufferedReader(new StringReader(response));
 
+                //send response head
+                BufferedReader outToPeer = new BufferedReader(new StringReader(response));
                 while((line = outToPeer.readLine()) != null){
                     outputStreamToPeer.writeBytes(line + "\n");
                 }
 
+
+                //send response data
+                // TODO: 4/23/18 new exact length of rfc
+                byte[] bytearray = new byte[(int)rfcfile.length()];
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(rfcfile));
+                bis.read(bytearray,0,bytearray.length);
+                //outputstream os os.write would be OK? no need to capsulate in bufferedoutputstream?
+                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+                bos.write(bytearray,0,bytearray.length);
+                //bos.flush();
+                System.out.println("File transferred");
             }
 
         }catch(IOException e){

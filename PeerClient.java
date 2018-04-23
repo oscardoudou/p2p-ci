@@ -51,6 +51,8 @@ public class PeerClient {
                 }
 
                 System.out.println("Response from PeerServer: ");
+                // TODO: 4/23/18 record length to reduce bytearray size 
+                String response = "";
                 line = "";
                 BufferedReader inFromPeer = new BufferedReader(new InputStreamReader(inputStreamFromPeer));
                 while ((line = inFromPeer.readLine()) != null){
@@ -58,6 +60,18 @@ public class PeerClient {
                         break;
                     System.out.println(line);
                 }
+
+                File curdir = new File(".");
+                String parentPath = curdir.getCanonicalFile().getParent();
+                parentPath += "/rfc";
+
+                BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+                byte[] bytearray = new byte[50*1023];
+                bis.read(bytearray,0,bytearray.length);
+
+                FileOutputStream fileOutputStream = new FileOutputStream(parentPath + "/rfc" + rfc_no + ".txt");
+                BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+                bos.write(bytearray,0,bytearray.length);
             }
 
         }catch(Exception e){

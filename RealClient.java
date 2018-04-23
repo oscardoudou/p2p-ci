@@ -64,6 +64,7 @@ public class RealClient {
 //                        break;
                     outputStreamToServer.writeBytes(line + '\n');
                 }
+
                 DataInputStream inputStreamFromServer = new DataInputStream(socket.getInputStream());
                 InputStreamReader serverStreamReader = new InputStreamReader(inputStreamFromServer);
                 BufferedReader inFromServer = new BufferedReader(serverStreamReader);

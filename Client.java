@@ -36,7 +36,7 @@ public class Client{
             System.out.println("Please input uploadport (you want to use as PeerServer)");
             int uploadportno = Integer.parseInt(sc.nextLine());
             realClient.upload_portno = uploadportno;
-            System.out.println(uploadportno);
+            //System.out.println(uploadportno);
 
             new StartClientServer(uploadportno).start();
 
