@@ -3,7 +3,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 /**
- * todo peerclient retrieve data from response
+ * done peerclient retrieve data from response
+ * done recieve file date depends on forehead status -> no empty rfc would be generated
+ * !!! if serverThread end in excepion program would not go back to position let you choose rfc, instead it go back to role selection, which indicates an abnormal end of peeclient
+ * done: 4/23/18 record length to reduce bytearray size
  */
 
 public class PeerClient {
@@ -51,27 +54,34 @@ public class PeerClient {
                 }
 
                 System.out.println("Response from PeerServer: ");
-                // TODO: 4/23/18 record length to reduce bytearray size 
-                String response = "";
+
+                String[] response = new String[7];
+                int i = 0;
                 line = "";
                 BufferedReader inFromPeer = new BufferedReader(new InputStreamReader(inputStreamFromPeer));
                 while ((line = inFromPeer.readLine()) != null){
                     if (line.equals("END"))
                         break;
+                    response[i++] = line;
                     System.out.println(line);
                 }
 
-                File curdir = new File(".");
-                String parentPath = curdir.getCanonicalFile().getParent();
-                parentPath += "/rfc";
+                int status = Integer.parseInt(response[0].substring(11,14));
+                int rfc_legnth = Integer.parseInt(response[4].substring(16,21));
+                if(status == 200){
+                    File curdir = new File(".");
+                    String parentPath = curdir.getCanonicalFile().getParent();
+                    parentPath += "/rfc";
 
-                BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-                byte[] bytearray = new byte[50*1023];
-                bis.read(bytearray,0,bytearray.length);
+                    BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+                    byte[] bytearray = new byte[rfc_legnth];
+                    bis.read(bytearray,0,bytearray.length);
 
-                FileOutputStream fileOutputStream = new FileOutputStream(parentPath + "/rfc" + rfc_no + ".txt");
-                BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
-                bos.write(bytearray,0,bytearray.length);
+                    FileOutputStream fileOutputStream = new FileOutputStream(parentPath + "/rfc" + rfc_no + ".txt");
+                    BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+                    bos.write(bytearray,0,bytearray.length);
+                }
+
             }
 
         }catch(Exception e){

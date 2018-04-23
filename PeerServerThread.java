@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DataInputStream 是最底层的
@@ -19,19 +21,30 @@ import java.util.Date;
  * //                System.out.println(dir.getCanonicalPath());
  *
  * done peer Server data transfer
+ *
  */
 
 
 public class PeerServerThread extends Thread{
     Socket socket;
+    Map<Integer,String > status_to_phrase = new HashMap<>();
+
+    public void initilize(){
+        status_to_phrase.put(200,"OK");
+        status_to_phrase.put(400,"Bad Request");
+        status_to_phrase.put(404,"Not Found");
+        status_to_phrase.put(505,"P2P-CI Version Not Supported");
+    }
+
 
     public PeerServerThread(Socket socket){
+
         this.socket = socket;
     }
 
     @Override
     public void run() {
-
+        initilize();
         System.out.println("now client could always works like a server role");
 
         try{
@@ -88,12 +101,15 @@ public class PeerServerThread extends Thread{
 
                 // TODO: 4/23/18 status correspons phrase
                 // TODO: 4/23/18 only 200 send infomation after 1st line
-                String response = "P2P-CI/1.0 " + status + "\r\n";
-                response += "Date: " + java.time.LocalDate.now() + " " + java.time.LocalTime.now() +"\r\n";
-                response += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + "\r\n";
-                response += "Last-Modified: " + new Date(rfcfile.lastModified()) + "\r\n";
-                response += "Content-Length: " + rfcfile.length() + "\r\n";
-                response += "Content-Type: Text/Text" +"\r\n";
+                String response = "P2P-CI/1.0 " + status + " " + status_to_phrase.get(status) + "\r\n";
+                if(status == 200){
+                    response += "Date: " + java.time.LocalDate.now() + " " + java.time.LocalTime.now() +"\r\n";
+                    response += "OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version") + "\r\n";
+                    response += "Last-Modified: " + new Date(rfcfile.lastModified()) + "\r\n";
+                    response += "Content-Length: " + rfcfile.length() + "\r\n";
+                    response += "Content-Type: Text/Text" +"\r\n";
+                }
+
                 // TODO: 4/23/18 dont know why "END" + "\r\n" would cut some content
                 response += "\r\n" + "END";
 
@@ -103,17 +119,19 @@ public class PeerServerThread extends Thread{
                     outputStreamToPeer.writeBytes(line + "\n");
                 }
 
+                if(status == 200){
+                    //send response data
+                    // TODO: 4/23/18 new exact length of rfc
+                    byte[] bytearray = new byte[(int)rfcfile.length()];
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(rfcfile));
+                    bis.read(bytearray,0,bytearray.length);
+                    //outputstream os os.write would be OK? no need to capsulate in bufferedoutputstream?
+                    BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+                    bos.write(bytearray,0,bytearray.length);
+                    //bos.flush();
+                    System.out.println("File transferred");
+                }
 
-                //send response data
-                // TODO: 4/23/18 new exact length of rfc
-                byte[] bytearray = new byte[(int)rfcfile.length()];
-                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(rfcfile));
-                bis.read(bytearray,0,bytearray.length);
-                //outputstream os os.write would be OK? no need to capsulate in bufferedoutputstream?
-                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-                bos.write(bytearray,0,bytearray.length);
-                //bos.flush();
-                System.out.println("File transferred");
             }
 
         }catch(IOException e){
