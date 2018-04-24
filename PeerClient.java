@@ -7,6 +7,7 @@ import java.util.Scanner;
  * done recieve file date depends on forehead status -> no empty rfc would be generated
  * !!! if serverThread end in excepion program would not go back to position let you choose rfc, instead it go back to role selection, which indicates an abnormal end of peeclient
  * done: 4/23/18 record length to reduce bytearray size
+ * done dont prompt rfc number selection  if user want to return
  */
 
 public class PeerClient {
@@ -29,10 +30,11 @@ public class PeerClient {
             while (true) {
                 System.out.println("Whether you want to request rfc from Peer" + "[" + hostname + ":" + portno + "]");
                 String choice = sc.nextLine();
-                System.out.println("Input the rfc you want to get:");
-                rfc_no = sc.nextLine();
+
                 switch (choice) {
                     case "yes":
+                        System.out.println("Input the rfc you want to get:");
+                        rfc_no = sc.nextLine();
                         get();
                         break;
                     default:

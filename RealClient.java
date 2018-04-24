@@ -22,17 +22,19 @@ public class RealClient {
             while(true){
 
                 System.out.println("Construct the request to send to server:");
-                System.out.println("Input request type(ADD/LOOKUP/LIST):");
+                System.out.println("Input request type(ADD/LOOKUP/LIST/LEAVE(leave the system(!), become active only to rerun the client.class again )):");
                 Scanner sc = new Scanner(System.in);
                 request_choice = sc.nextLine();
-                System.out.println("Input rfc no you want to request(ADD/LOOKUP/LIST):");
-                String rfc_no = sc.nextLine();
-
+                String rfc_no;
                 switch(request_choice){
                     case "ADD":
+                        System.out.println("Input rfc no you want to ADD:");
+                        rfc_no = sc.nextLine();
                         request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
                         break;
                     case "LOOKUP":
+                        System.out.println("Input rfc no you want to LOOKUP:");
+                        rfc_no = sc.nextLine();
                         request += request_choice + " RFC " + rfc_no + " P2P-CI/1.0\r\n";
                         break;
                     case "LIST":
@@ -44,7 +46,7 @@ public class RealClient {
                         System.out.println("Leaving the system, irreversible operation, only restart the program could register in again");
                         return;
                     default:
-                        System.out.println("Invalid input return to role selection");
+                        System.out.println("Invalid input returning to role selection");
                         return;
 
                 }
