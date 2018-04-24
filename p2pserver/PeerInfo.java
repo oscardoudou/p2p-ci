@@ -1,3 +1,4 @@
+package p2pserver;
 public class PeerInfo {
     PeerInfo next = null;
     public String hostname;

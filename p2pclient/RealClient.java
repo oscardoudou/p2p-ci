@@ -1,3 +1,4 @@
+package p2pclient;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.io.*;
@@ -43,7 +44,7 @@ public class RealClient {
                         //to RealClient/Peer select
                     case "LEAVE":
                         socket.close();
-                        System.out.println("Leaving the system, irreversible operation, only restart the program could register in again");
+                        System.out.println("Left the system, irreversible operation. Only restart the program could register in again");
                         return;
                     default:
                         System.out.println("Invalid input returning to role selection");

@@ -1,3 +1,4 @@
+package p2pclient;
 import java.io.*;
 import java.net.Socket;
 import java.util.Date;
@@ -84,11 +85,17 @@ public class PeerServerThread extends Thread{
 
                 //search current directory rfc name
                 //For IDE . means p2pclient/.  in other words it search file under p2pclient ingore file folder like src and out
-                File curdir = new File(".");
-                String parentPath = curdir.getCanonicalFile().getParent();
-                parentPath += "/rfc";
-                //mimic new File (".")
-                File rfcdir = new File(parentPath + "/.");
+                
+                File curdir = new File(System.getProperty("user.dir"));
+                // System.out.println(System.getProperty("user.dir"));
+                // System.out.println(curdir.getCanonicalPath());
+                // System.out.println(curdir.getAbsolutePath());
+                File rfcdir = new File(curdir.getCanonicalPath() + "/rfc/.");
+                // String parentPath = curdir.getCanonicalFile().getParent();
+                // parentPath += "/rfc";
+                // //mimic new File (".")
+                // System.out.println(parentPath);
+                // File rfcdir = new File(parentPath + "/.");
                 File[] fileList = rfcdir.listFiles();
                 File rfcfile = null;
                 String targetrfc = "rfc" + no + ".txt";
@@ -99,6 +106,7 @@ public class PeerServerThread extends Thread{
                     if(targetrfc.equals(file.getName())){
                         status = 200;
                         rfcfile = file;
+                        System.out.println(rfcfile.getAbsolutePath());
                     }
                 }
 

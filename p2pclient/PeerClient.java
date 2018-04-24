@@ -1,3 +1,4 @@
+package p2pclient;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -71,15 +72,16 @@ public class PeerClient {
                 int status = Integer.parseInt(response[0].substring(11,14));
                 int rfc_legnth = Integer.parseInt(response[4].substring(16,21));
                 if(status == 200){
-                    File curdir = new File(".");
-                    String parentPath = curdir.getCanonicalFile().getParent();
-                    parentPath += "/rfc";
-
+                    File curdir = new File(System.getProperty("user.dir"));
+                    // String parentPath = curdir.getCanonicalFile().getParent();
+                    // parentPath += "/rfc";
+                    System.out.println(System.getProperty("user.dir"));
+                    //server filelist循环时貌似一定要点 这里不循环可以不用
                     BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
                     byte[] bytearray = new byte[rfc_legnth];
                     bis.read(bytearray,0,bytearray.length);
 
-                    FileOutputStream fileOutputStream = new FileOutputStream(parentPath + "/rfc" + rfc_no + ".txt");
+                    FileOutputStream fileOutputStream = new FileOutputStream(curdir.getCanonicalPath() + "/rfc/rfc" + rfc_no + ".txt");
                     BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
                     bos.write(bytearray,0,bytearray.length);
                 }

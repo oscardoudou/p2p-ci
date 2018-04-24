@@ -1,3 +1,4 @@
+package p2pserver;
 public class RFCInfo {
     RFCInfo next = null;
     public int no;
