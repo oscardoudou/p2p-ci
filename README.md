@@ -30,7 +30,7 @@ bash client.sh
  	* LOOKUP 
 	* LIST
 4. peerclient 
-	 *GET
+	* GET
 ## Acknowledgement
 + Rememeber enter upload portno for client first, the system put service other in the first place
 + There is only two roles for client: client,peerclient
