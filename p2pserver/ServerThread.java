@@ -51,7 +51,7 @@ public class ServerThread extends Thread {
                 //avoid broken pipe write exception, know and find this solution by debug step by step
                 if(line == null){
                     removeRecord();
-                    System.out.println("remove executed");
+                    //System.out.println("remove executed");
                     return;
                 }
                     
@@ -165,30 +165,30 @@ public class ServerThread extends Thread {
         response += "\r\n" + "END";
     }
     public void removeRecord(){
-        checkRecordStatus();
+        // checkRecordStatus();
         String inactive_hostname = hostname;
 
-        System.out.println("-------------------------");
-        System.out.println(System.identityHashCode(hostname));
-        System.out.println(System.identityHashCode(inactive_hostname));
-        System.out.println("-------------------------");
+        // System.out.println("-------------------------");
+        // System.out.println(System.identityHashCode(hostname));
+        // System.out.println(System.identityHashCode(inactive_hostname));
+        // System.out.println("-------------------------");
         //dont user iterator and modify method at same loop, which will throw concurrent exception
-        System.out.println(list.size());
+        // System.out.println(list.size());
         for(int i = 0 ; i < list.size() ; i ++){
             //== is used to compare whether reference same object, equal is usedt to compare string
-            System.out.println(System.identityHashCode(list.get(i).hostname));
-            System.out.println(i + "" + (list.get(i).hostname.equals(inactive_hostname)));
+            // System.out.println(System.identityHashCode(list.get(i).hostname));
+            // System.out.println(i + "" + (list.get(i).hostname.equals(inactive_hostname)));
             if(list.get(i).hostname.equals(inactive_hostname)){
                 list.remove(i);
                 i--;
             }
                 
         } 
-        System.out.println("-------------------------");
-        System.out.println(index.size());
+        // System.out.println("-------------------------");
+        // System.out.println(index.size());
         for(int i = 0 ; i < index.size() ; i ++){
-            System.out.println(System.identityHashCode(index.get(i).hostname));
-            System.out.println(i + "" + (index.get(i).hostname.equals(inactive_hostname)));
+            // System.out.println(System.identityHashCode(index.get(i).hostname));
+            // System.out.println(i + "" + (index.get(i).hostname.equals(inactive_hostname)));
             if(index.get(i).hostname.equals(inactive_hostname)){
                 index.remove(i);
                 i--;
@@ -196,8 +196,8 @@ public class ServerThread extends Thread {
                 
         }
 
-        System.out.println("-------------------------");
-        checkRecordStatus();
+        // System.out.println("-------------------------");
+        // checkRecordStatus();
         
     }
     public void checkRecordStatus(){
