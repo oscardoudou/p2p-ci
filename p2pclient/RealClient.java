@@ -104,12 +104,73 @@ public class RealClient {
         }
         request += "Port: " + upload_portno + "\r\n";
         if(!request_choice.equals("LIST"))
-            request += "Title: " + "PCE Requirement" +"\r\n" ;
+            request += "Title: " + retrieveRFCTitle() +"\r\n" ;
         request += "\r\n" +"END";
     }
-    //*todo
-    public void retrieveRFCTitle(){
+    
+    public String retrieveRFCTitle(){
+        File rfcdir = new File(System.getProperty("user.dir") + "/rfc/.");
+        // System.out.println(System.getProperty("user.dir") + "/rfc/.");
+        File[] list = rfcdir.listFiles();
+        String read = null;
+        String prepre = null;
+        String pre = null;
+        String title = null;
+        try{
+            InputStream in;
+            BufferedReader br = null;
+            for(File file : list){
+                if(file.getName().equals("rfc" + rfc_no + ".txt")){
+                //getrfc name
+                    in = new FileInputStream(file);
+                //again BufferedReader(InputStreamReader(InputStream))
+                    br = new BufferedReader(new InputStreamReader(in));
+                }
+            }
+            //locate title by Abstract
+            
+            int count = 0;
+            do{ 
+                if(count == 0){
+                    pre = br.readLine();
+                    read = br.readLine();
+                }
+                if(count >= 1){
+                    prepre = pre;
+                    pre = read;
+                    read = br.readLine();
+                    // System.out.println(prepre);
+                    // System.out.println(pre);
+                    // System.out.println(read);
+                }
 
+                if(read.contains("Abstract"))
+                    break; 
+                count++;
+            }while(read != null);
+
+            }catch(IOException e){
+            e.printStackTrace();
+        }
+        // System.out.println("------------------");
+        System.out.println(prepre);
+        title = prepre;
+        //delete space
+        int  i = 0;
+        while(title.charAt(i) == ' '){
+            i++;
+        }
+        int start  = i;
+        // 下面的代码有点问题，因为试验出了这里rfc的标题这行，标题后不会有有空格，直接用startindex就行
+        // i = title.length();
+        // //这里顺index判断是否是’换行‘是错的，换行已经在getLine()搞掉了
+        // while(title.charAt(i - 1) != ' '){
+        //     i--;
+        // }       
+        //int end = i;
+        //System.out.println(title.substring(start));
+        // System.out.println(title.substring(start,end));      
+        return title.substring(start);
     }
 
 }
