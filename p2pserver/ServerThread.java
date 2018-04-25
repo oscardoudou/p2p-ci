@@ -51,10 +51,12 @@ public class ServerThread extends Thread {
                 //avoid broken pipe write exception, know and find this solution by debug step by step
                 if(line == null)
                     return;
+                    
                 version = request[0].substring(request[0].length()-10,request[0].length());
                 hostname = request[1].substring(6);
                 port_no = Integer.parseInt(request[2].substring(6));
-                title = request[3].substring(7);
+                if(!request[0].substring(0,3).equals("LIS"))
+                    title = request[3].substring(7);
                 //System.out.println(request[0].substring(0,3));
                 switch(request[0].substring(0,3)){
                     case "ADD":
