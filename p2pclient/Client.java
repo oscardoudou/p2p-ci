@@ -32,11 +32,12 @@ public class Client{
 
             //this socket is for persistent connection to server, only close when leave system
             Socket clientSocket = new Socket(hostname, port);
-            RealClient realClient = new RealClient(clientSocket);
 
-            System.out.println("Please input uploadport (you want to use as PeerServer)");
+            System.out.println("Please input uploadport(you want to use as PeerServer)");
             int uploadportno = Integer.parseInt(sc.nextLine());
-            realClient.upload_portno = uploadportno;
+
+            RealClient realClient = new RealClient(clientSocket, uploadportno);
+
             //System.out.println(uploadportno);
 
             new StartClientServer(uploadportno).start();

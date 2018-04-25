@@ -5,28 +5,35 @@ import java.io.*;
 import java.util.Scanner;
 
 public class RealClient {
-
+    //不同函数都要访问的，某些函数写，某些函数改
     Socket socket = null;
+    private int upload_portno;
+    String request = "";
+    String rfc_no;
+    String request_choice;
 
-    public RealClient(Socket socket){
+    public RealClient(Socket socket, int upload_portno){
         this.socket = socket;
+        this.upload_portno = upload_portno;
     }
-
-    public int upload_portno;
 
     public void run(){
         try{
             String response;
-            String request_choice;
-            String request = "";
+            
+            
 
             while(true){
 
-                System.out.println("Construct the request to send to server:");
-                System.out.println("Input request type(ADD/LOOKUP/LIST/LEAVE(leave the system(!), become active only to rerun the client.class again )):");
+                System.out.println("Construct the request to send to server.");
+                System.out.println("Input request type(ADD/LOOKUP/LIST/LEAVE:");
+                System.out.println("!Enter LEAVE only to leave the system, rerun the client to become active again");
+                
+                
+                
                 Scanner sc = new Scanner(System.in);
                 request_choice = sc.nextLine();
-                String rfc_no;
+                //need refractor 
                 switch(request_choice){
                     case "ADD":
                         System.out.println("Input rfc no you want to ADD:");
@@ -43,18 +50,19 @@ public class RealClient {
                         break;
                         //to RealClient/Peer select
                     case "LEAVE":
-                        socket.close();
+                        try{
+                            socket.close();
+                        }catch(IOException e){
+                            e.printStackTrace();
+                        }
                         System.out.println("Left the system, irreversible operation. Only restart the program could register in again");
                         return;
                     default:
                         System.out.println("Invalid input returning to role selection");
                         return;
+                    }
 
-                }
-                request += "Host: " + Inet4Address.getLocalHost().getHostAddress() + "\r\n";
-                request += "Port: " + upload_portno + "\r\n";
-                request += "Title: " + "PCE Requirement" +"\r\n" ;
-                request += "\r\n" +"END";
+                constructRequest();
 //
                 BufferedReader outToServer = new BufferedReader(new StringReader(request));
                 //!!!request must set to "" otherwise the 2nd request would follow by "END"of 1st request, which can't not detect, further lead to variable request[] in server out of range 5
@@ -85,4 +93,23 @@ public class RealClient {
             System.out.println(e);
         }
     }
+
+    public void constructRequest(){
+        
+        
+        try{
+            request += "Host: " + Inet4Address.getLocalHost().getHostAddress() + "\r\n";
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        request += "Port: " + upload_portno + "\r\n";
+        if(!request_choice.equals("LIST"))
+            request += "Title: " + "PCE Requirement" +"\r\n" ;
+        request += "\r\n" +"END";
+    }
+    //*todo
+    public void retrieveRFCTitle(){
+
+    }
+
 }
