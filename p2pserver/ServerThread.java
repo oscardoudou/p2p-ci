@@ -49,8 +49,11 @@ public class ServerThread extends Thread {
                     System.out.println(line);
                 }
                 //avoid broken pipe write exception, know and find this solution by debug step by step
-                if(line == null)
+                if(line == null){
+                    removeRecord();
+                    System.out.println("remove executed");
                     return;
+                }
                     
                 version = request[0].substring(request[0].length()-10,request[0].length());
                 hostname = request[1].substring(6);
@@ -118,12 +121,17 @@ public class ServerThread extends Thread {
              int uploadportno = 0;
              while(peerit.hasNext()){
                  PeerInfo peerinfo = peerit.next();
-                 if(peerinfo.hostname == rfc.hostname)
+                 if(peerinfo.hostname == rfc.hostname){
+                    //there would only one in whole peerlist reference the exact same string(hostname) in rfc, since they are created together in add
                      uploadportno = peerinfo.portno;
-             }
-            response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + uploadportno +"\r\n";
+                     response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + uploadportno +"\r\n";
+                    }
+                //below same stmt in if could move out, would have same result, cause there is only one reference match
+                //response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + uploadportno +"\r\n";
+            }
         }
         response += "\r\n" + "END";
+        checkRecordStatus();
     }
     public void responseLOOKUP(String[] request){
         response += version + " 200 OK\r\n";
@@ -145,13 +153,63 @@ public class ServerThread extends Thread {
                 Iterator<PeerInfo> peerit = list.iterator();
                 while(peerit.hasNext()){
                     PeerInfo peerinfo = peerit.next();
+                    //here it has to be reference same obj, reason see p2pplan
                     if(peerinfo.hostname == rfc.hostname)
                         //for each matched rfc_entry, there could only be one unique portno
+                        //effective solve the problem that test could only be operated on single machine, which still show correct result
                         uploadportno = peerinfo.portno;
                 }
                 response += "RFC " + rfc.no + " " + rfc.title + " " + rfc.hostname + " " + uploadportno +"\r\n";
             }
         }
         response += "\r\n" + "END";
+    }
+    public void removeRecord(){
+        checkRecordStatus();
+        String inactive_hostname = hostname;
+
+        System.out.println("-------------------------");
+        System.out.println(System.identityHashCode(hostname));
+        System.out.println(System.identityHashCode(inactive_hostname));
+        System.out.println("-------------------------");
+        //dont user iterator and modify method at same loop, which will throw concurrent exception
+        System.out.println(list.size());
+        for(int i = 0 ; i < list.size() ; i ++){
+            //== is used to compare whether reference same object, equal is usedt to compare string
+            System.out.println(System.identityHashCode(list.get(i).hostname));
+            System.out.println(i + "" + (list.get(i).hostname.equals(inactive_hostname)));
+            if(list.get(i).hostname.equals(inactive_hostname)){
+                list.remove(i);
+                i--;
+            }
+                
+        } 
+        System.out.println("-------------------------");
+        System.out.println(index.size());
+        for(int i = 0 ; i < index.size() ; i ++){
+            System.out.println(System.identityHashCode(index.get(i).hostname));
+            System.out.println(i + "" + (index.get(i).hostname.equals(inactive_hostname)));
+            if(index.get(i).hostname.equals(inactive_hostname)){
+                index.remove(i);
+                i--;
+            }
+                
+        }
+
+        System.out.println("-------------------------");
+        checkRecordStatus();
+        
+    }
+    public void checkRecordStatus(){
+        Iterator<PeerInfo> peerit_final = list.iterator();
+        while(peerit_final.hasNext()){
+            PeerInfo peerinfo_final = peerit_final.next();
+            System.out.println(peerinfo_final);
+        }
+        Iterator<RFCInfo> it_final = index.iterator();
+        while(it_final.hasNext()) {
+            RFCInfo rfc_final = it_final.next();
+            System.out.println(rfc_final);
+        }
     }
 }
